@@ -10,7 +10,7 @@
  */
 public class ServerJFrame extends javax.swing.JFrame {
     
-    private SimpleServer server;
+    private Server server;
     private int port;
     
     /**
@@ -88,14 +88,14 @@ public class ServerJFrame extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         System.out.println("Stopping Server");
         TextArea.append("Stopping Server\n");
-        server.stop();
+        server.stopThread();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        server = new SimpleServer(port);
+        server = new Server(port);
         new Thread(server).start();
-        System.out.println("Server is waiting to connect");
-        TextArea.append("Server is waiting to connect\n");
+        //System.out.println("Server is waiting to connect");
+        //TextArea.append("Server is waiting to connect\n");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

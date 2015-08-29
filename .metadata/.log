@@ -1,0 +1,18 @@
+!SESSION 2015-08-29 22:46:27.577 -----------------------------------------------
+eclipse.buildId=M20130204-1200
+java.version=1.8.0_25
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=iw_IL
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY org.eclipse.ui 2 2 2015-08-29 22:55:25.331
+!MESSAGE Invalid property category path: ValidationPropertiesPage (bundle: org.eclipse.wst.html.ui, propertyPage: org.eclipse.wst.html.ui.propertyPage.project.validation)
+
+!ENTRY org.eclipse.ui 2 2 2015-08-29 22:55:25.396
+!MESSAGE Invalid property category path: ValidationPropertiesPage (bundle: org.eclipse.wst.xml.ui, propertyPage: org.eclipse.wst.xml.ui.propertyPage.project.validation)
+
+!ENTRY org.eclipse.ui 4 4 2015-08-29 23:08:16.832
+!MESSAGE Referenced part does not exist yet: org.eclipse.ui.views.ProblemView.
+
+!ENTRY com.android.ide.eclipse.ddms 4 0 2015-08-29 23:08:18.520
+!MESSAGE DDMS files not found: D:\Softwares\Java Development\eclipse\platform-tools\adb.exe D:\Softwares\Java Development\eclipse\platform-tools\hprof-conv.exe D:\Softwares\Java Development\eclipse\tools\traceview.bat 

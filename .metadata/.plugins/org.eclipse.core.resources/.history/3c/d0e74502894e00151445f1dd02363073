@@ -1,0 +1,21 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author annaf
+ */
+//import java.net.*;
+import java.io.*;
+
+public class Main {
+	public static void main(String[] args) throws IOException {
+
+		ServerJFrame serverJFrame = new ServerJFrame();
+
+		serverJFrame.setVisible(true);
+	}
+
+}
