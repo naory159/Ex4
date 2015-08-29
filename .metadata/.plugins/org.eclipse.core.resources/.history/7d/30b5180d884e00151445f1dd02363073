@@ -1,8 +1,0 @@
-package ChatMessage;
-
-public class Snippet {
-	public static void main(String[] args) {
-		ChatMessage.java
-	}
-}
-
