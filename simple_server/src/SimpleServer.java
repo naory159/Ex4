@@ -23,12 +23,9 @@ public class SimpleServer implements Runnable{
 	ServerSocket serverSocket = null;  // Server sock that will listen for incoming connections
 	Thread       runningThread = null;
 	boolean      isStopped    = false;
-	
-	ServerJFrame ServerGUI;
-	
-	public SimpleServer(int port) {
+
+	public SimpleServer(int port){
 		this.serverPort = port;
-		ServerGUI = new ServerJFrame();
 	}
 
 	public void run(){
