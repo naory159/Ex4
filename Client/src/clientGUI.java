@@ -37,9 +37,6 @@ public class clientGUI extends javax.swing.JFrame {
         sendMessageButt = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         BigTextArea = new javax.swing.JTextArea();
-        messageLabel = new javax.swing.JLabel();
-        toLabel = new javax.swing.JLabel();
-        toField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -83,12 +80,6 @@ public class clientGUI extends javax.swing.JFrame {
         BigTextArea.setRows(5);
         jScrollPane1.setViewportView(BigTextArea);
 
-        messageLabel.setText("Message: ");
-
-        toLabel.setText(" TO: ");
-
-        toField.setText("every one");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -98,13 +89,7 @@ public class clientGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(messageLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sendMessageField, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(toLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(toField, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(sendMessageField, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sendMessageButt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
@@ -141,10 +126,7 @@ public class clientGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sendMessageField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sendMessageButt)
-                    .addComponent(messageLabel)
-                    .addComponent(toLabel)
-                    .addComponent(toField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sendMessageButt))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
@@ -204,19 +186,16 @@ public class clientGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea BigTextArea;
+    public static javax.swing.JTextArea BigTextArea;
     private javax.swing.JLabel adderssLabel;
     private javax.swing.JTextField addressField;
     private javax.swing.JButton clearButt;
     private javax.swing.JButton connButt;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel messageLabel;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JButton sendMessageButt;
     private javax.swing.JTextField sendMessageField;
     private javax.swing.JButton showOnlineButt;
-    private javax.swing.JTextField toField;
-    private javax.swing.JLabel toLabel;
     private javax.swing.JTextField userNameField;
     // End of variables declaration//GEN-END:variables
 }

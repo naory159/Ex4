@@ -79,7 +79,7 @@ public class Client {
 	 */
 	private void display(String msg) {
 		System.out.println(msg);      // println in console mode
-		cg.append(msg + "\n");		// append to the ClientGUI JTextArea (or whatever)
+		clientGUI.BigTextArea.append(msg + "\n");		// append to the ClientGUI JTextArea (or whatever)
 	}
 
 	/*
@@ -113,7 +113,7 @@ public class Client {
 		catch(Exception e) {} // not much else I can do
 
 		// inform the GUI
-		cg.connectionFailed();
+		//cg.connectionFailed();
 
 	}
 	/*
@@ -214,7 +214,7 @@ public class Client {
 						System.out.print("> ");
 					}
 					else {*/
-					cg.append(msg);
+					clientGUI.BigTextArea.append(msg);
 					//}
 				}
 				catch(IOException e) {
