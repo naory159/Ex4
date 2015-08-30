@@ -15,6 +15,7 @@ public class clientGUI extends javax.swing.JFrame {
     String serverAddress;
     String userName;
     Client client;
+    boolean isConnect;
     
     /**
      * Creates new form client
@@ -26,6 +27,7 @@ public class clientGUI extends javax.swing.JFrame {
 	serverAddress = "localhost";
 	userName = "Anonymous";
         client = null;
+        isConnect = false;
     }
 
     /**
@@ -156,28 +158,34 @@ public class clientGUI extends javax.swing.JFrame {
 
     private void connButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connButtActionPerformed
         // default values
-        
-	if (addressField.getText().equals("") || userNameField.getText().equals("")) {
+        if (!isConnect) {
+            if (addressField.getText().equals("") || userNameField.getText().equals("")) {
             BigTextArea.append("\nuser name or address is invalid\n");
             
+            }
+            else {
+                serverAddress = addressField.getText();
+                userName = userNameField.getText();
+                // create the Client object
+                client = new Client(serverAddress, portNumber, userName);
+                // test if we can start the connection to the Server
+                // if it failed nothing we can do
+                if(!client.start()) return;
+                isConnect = true;
+            }
         }
         else {
-            serverAddress = addressField.getText();
-            userName = userNameField.getText();
-            // create the Client object
-            client = new Client(serverAddress, portNumber, userName);
-            // test if we can start the connection to the Server
-            // if it failed nothing we can do
-            if(!client.start()) return;
-            
+            BigTextArea.append("\nyou are already connected\n");
         }
-        
-        
-        
     }//GEN-LAST:event_connButtActionPerformed
 
     private void showOnlineButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showOnlineButtActionPerformed
-        client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));
+        if (isConnect) {
+            client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));
+        }
+        else {
+            BigTextArea.append("\nyou are not connect\n");
+        }
     }//GEN-LAST:event_showOnlineButtActionPerformed
 
     private void clearButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtActionPerformed
@@ -185,9 +193,14 @@ public class clientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_clearButtActionPerformed
 
     private void sendMessageButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtActionPerformed
+        if (!isConnect) {
+            BigTextArea.append("\nyou are not connect\n");
+            return;
+        }
         String msg = sendMessageField.getText();
         if(msg.equalsIgnoreCase("LOGOUT")) {
             client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
+            isConnect = false;
         }
         // message WhoIsIn
         else {
