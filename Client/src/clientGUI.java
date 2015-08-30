@@ -10,11 +10,22 @@
  */
 public class clientGUI extends javax.swing.JFrame {
 
+    // default values
+    int portNumber;
+    String serverAddress;
+    String userName;
+    Client client;
+    
     /**
      * Creates new form client
      */
     public clientGUI() {
         initComponents();
+        // default values
+	portNumber = 45000;
+	serverAddress = "localhost";
+	userName = "Anonymous";
+        client = null;
     }
 
     /**
@@ -37,6 +48,8 @@ public class clientGUI extends javax.swing.JFrame {
         sendMessageButt = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         BigTextArea = new javax.swing.JTextArea();
+        toLabel = new javax.swing.JLabel();
+        toField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -80,6 +93,8 @@ public class clientGUI extends javax.swing.JFrame {
         BigTextArea.setRows(5);
         jScrollPane1.setViewportView(BigTextArea);
 
+        toLabel.setText("  to:  ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -89,9 +104,13 @@ public class clientGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(sendMessageField, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(sendMessageField)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sendMessageButt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(toLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(toField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sendMessageButt))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(connButt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -126,7 +145,9 @@ public class clientGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sendMessageField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sendMessageButt))
+                    .addComponent(sendMessageButt)
+                    .addComponent(toLabel)
+                    .addComponent(toField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
@@ -134,11 +155,29 @@ public class clientGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void connButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connButtActionPerformed
-        // TODO add your handling code here:
+        // default values
+        
+	if (addressField.getText().equals("") || userNameField.getText().equals("")) {
+            BigTextArea.append("\nuser name or address is invalid\n");
+            
+        }
+        else {
+            serverAddress = addressField.getText();
+            userName = userNameField.getText();
+            // create the Client object
+            client = new Client(serverAddress, portNumber, userName);
+            // test if we can start the connection to the Server
+            // if it failed nothing we can do
+            if(!client.start()) return;
+            
+        }
+        
+        
+        
     }//GEN-LAST:event_connButtActionPerformed
 
     private void showOnlineButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showOnlineButtActionPerformed
-        // TODO add your handling code here:
+        client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, ""));
     }//GEN-LAST:event_showOnlineButtActionPerformed
 
     private void clearButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtActionPerformed
@@ -146,7 +185,22 @@ public class clientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_clearButtActionPerformed
 
     private void sendMessageButtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtActionPerformed
-        // TODO add your handling code here:
+        String msg = sendMessageField.getText();
+        if(msg.equalsIgnoreCase("LOGOUT")) {
+            client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
+        }
+        // message WhoIsIn
+        else {
+            String toMess = toField.getText();
+            if (toMess.equals("")) {
+                // default to ordinary message
+                client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg));
+            }
+            else {
+                client.sendMessage(new ChatMessage(ChatMessage.TO, msg,toMess));
+            }
+            
+        }
     }//GEN-LAST:event_sendMessageButtActionPerformed
 
     /**
@@ -196,6 +250,8 @@ public class clientGUI extends javax.swing.JFrame {
     private javax.swing.JButton sendMessageButt;
     private javax.swing.JTextField sendMessageField;
     private javax.swing.JButton showOnlineButt;
+    private javax.swing.JTextField toField;
+    private javax.swing.JLabel toLabel;
     private javax.swing.JTextField userNameField;
     // End of variables declaration//GEN-END:variables
 }

@@ -247,7 +247,17 @@ public class Server extends Thread {
 						writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
 					}
 					break;
-				}
+                                case ChatMessage.TO:
+                                    for(int i = 0; i < al.size(); ++i) {
+					ClientThread ct = al.get(i);
+                                        if (cm.getTO().equalsIgnoreCase(ct.username)) {
+                                            writeMsg(username + ": " + message);
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                                
 			}
 			// remove myself from the arrayList containing the list of the
 			// connected Clients
