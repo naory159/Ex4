@@ -12,13 +12,14 @@ public class ServerJFrame extends javax.swing.JFrame {
     
     private Server server;
     private int port;
-    
+    boolean isConnect;
     /**
      * Creates new form ServerJFrame
      */
     public ServerJFrame() {
         initComponents();
         this.port = 45000;
+        isConnect = false;
     }
 
     /**
@@ -89,13 +90,21 @@ public class ServerJFrame extends javax.swing.JFrame {
         System.out.println("Stopping Server");
         TextArea.append("Stopping Server\n");
         server.stopThread();
+        isConnect = false;
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        server = new Server(port);
-        new Thread(server).start();
-        //System.out.println("Server is waiting to connect");
-        //TextArea.append("Server is waiting to connect\n");
+        if (!isConnect) {
+            server = new Server(port);
+            new Thread(server).start();
+            isConnect = true;
+            //System.out.println("Server is waiting to connect");
+            //TextArea.append("Server is waiting to connect\n");
+        }
+        else {
+            TextArea.append("\nyou are already connected\n");
+        }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
