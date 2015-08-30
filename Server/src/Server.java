@@ -123,6 +123,27 @@ public class Server extends Thread {
 			}
 		}
 	}
+                
+        private synchronized void broadcastOnlyOne(String message, ChatMessage cm) {
+                
+                // add HH:mm:ss and \n to the message
+		String time = sdf.format(new Date());
+		String messageLf = time + " " + message + "\n";
+		// display message on console and on  GUI
+		System.out.print(messageLf);
+		ServerJFrame.TextArea.append(messageLf);     // append in the room window
+
+		// we loop in reverse order in case we would have to remove a Client
+		// because it has disconnected
+		for(int i = al.size(); --i >= 0;) {
+			ClientThread ct = al.get(i);
+			// try to write to the Client if it fails remove it from the list
+			if(cm.getTO().equalsIgnoreCase(ct.username) && !ct.writeMsg(messageLf)) {
+				al.remove(i);
+				display("Disconnected Client " + ct.username + " removed from list.");
+			}
+		}
+	}
 
 	// for a client who logoff using the LOGOUT message
 	synchronized void remove(int id) {
@@ -248,13 +269,7 @@ public class Server extends Thread {
 					}
 					break;
                                 case ChatMessage.TO:
-                                    for(int i = 0; i < al.size(); ++i) {
-					ClientThread ct = al.get(i);
-                                        if (cm.getTO().equalsIgnoreCase(ct.username)) {
-                                            writeMsg(username + ": " + message);
-                                            break;
-                                        }
-                                    }
+                                    broadcastOnlyOne(username + ": " + message, cm);
                                     break;
                                 }
                                 
