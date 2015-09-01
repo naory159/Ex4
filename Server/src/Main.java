@@ -3,7 +3,7 @@ import java.io.*;
 public class Main {
     
 	public static void main(String[] args) throws IOException {
-		ServerJFrame serverJFrame = new ServerJFrame();
+		serverGUI serverJFrame = new serverGUI();
 		serverJFrame.setVisible(true);
 	}
 
