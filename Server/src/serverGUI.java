@@ -8,7 +8,7 @@
  *
  * @author Naor
  */
-public class ServerJFrame extends javax.swing.JFrame {
+public class serverGUI extends javax.swing.JFrame {
     
     private Server server;
     private int port;
@@ -16,7 +16,7 @@ public class ServerJFrame extends javax.swing.JFrame {
     /**
      * Creates new form ServerJFrame
      */
-    public ServerJFrame() {
+    public serverGUI() {
         initComponents();
         this.port = 45000;
         isConnect = false;
@@ -34,7 +34,7 @@ public class ServerJFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        TextArea = new javax.swing.JTextArea();
+        serverTextArea = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,9 +52,9 @@ public class ServerJFrame extends javax.swing.JFrame {
             }
         });
 
-        TextArea.setColumns(20);
-        TextArea.setRows(5);
-        jScrollPane1.setViewportView(TextArea);
+        serverTextArea.setColumns(20);
+        serverTextArea.setRows(5);
+        jScrollPane1.setViewportView(serverTextArea);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -88,7 +88,7 @@ public class ServerJFrame extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         System.out.println("Stopping Server");
-        TextArea.append("Stopping Server\n");
+        serverTextArea.append("Stopping Server\n");
         server.stopThread();
         isConnect = false;
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -102,15 +102,15 @@ public class ServerJFrame extends javax.swing.JFrame {
             //TextArea.append("Server is waiting to connect\n");
         }
         else {
-            TextArea.append("\nyou are already connected\n");
+            serverTextArea.append("\nyou are already connected\n");
         }
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public static javax.swing.JTextArea TextArea;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
+    public static javax.swing.JTextArea serverTextArea;
     // End of variables declaration//GEN-END:variables
 }

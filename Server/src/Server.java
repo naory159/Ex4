@@ -3,9 +3,6 @@ import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/*
- * The server that can be run both as a console application or a GUI
- */
 public class Server extends Thread {
 	// a unique ID for each connection
 	private static int uniqueId;
@@ -17,7 +14,6 @@ public class Server extends Thread {
 	private int port;
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
-
 
 	/*
 	 *  server constructor that receive the port to listen to for connection as parameter
@@ -46,10 +42,9 @@ public class Server extends Thread {
 				// format message saying we are waiting
 				display("Server waiting for Clients on port " + port + ".");
 
-				Socket socket = serverSocket.accept();  	// accept connection
+				Socket socket = serverSocket.accept();  // accept connection
 				// if I was asked to stop
-				if(!keepGoing)
-					break;
+				if(!keepGoing) break;
 				ClientThread t = new ClientThread(socket);  // make a thread of it
 				al.add(t);									// save it in the ArrayList
 				t.start();
@@ -64,9 +59,7 @@ public class Server extends Thread {
 						tc.sOutput.close();
 						tc.socket.close();
 					}
-					catch(IOException ioE) {
-						// not much I can do
-					}
+					catch(IOException ioE) {}
 				}
 			}
 			catch(Exception e) {
@@ -79,28 +72,21 @@ public class Server extends Thread {
 			display(msg);
 		}
 	}		
-	/*
-	 * For the GUI to stop the server
-	 */
+
 	protected void stopThread() {
 		keepGoing = false;
-		// connect to myself as Client to exit statement 
-		// Socket socket = serverSocket.accept();
 		try {
 			new Socket("localhost", port);
 		}
-		catch(Exception e) {
-			// nothing I can really do
-		}
+		catch(Exception e) {}
 	}
-	/*
-	 * Display an event (not a message) to the console or the GUI
-	 */
+	
 	private void display(String msg) {
 		String time = sdf.format(new Date()) + " " + msg;
 		System.out.println(time);
-		ServerJFrame.TextArea.append(time + "\n");
+		serverGUI.serverTextArea.append(time + "\n");
 	}
+        
 	/*
 	 *  to broadcast a message to all Clients
 	 */
@@ -108,9 +94,8 @@ public class Server extends Thread {
 		// add HH:mm:ss and \n to the message
 		String time = sdf.format(new Date());
 		String messageLf = time + " " + message + "\n";
-		// display message on console and on  GUI
 		System.out.print(messageLf);
-		ServerJFrame.TextArea.append(messageLf);     // append in the room window
+		serverGUI.serverTextArea.append(messageLf);     
 
 		// we loop in reverse order in case we would have to remove a Client
 		// because it has disconnected
@@ -123,15 +108,17 @@ public class Server extends Thread {
 			}
 		}
 	}
-                
+         
+        /*
+	 *  to broadcast a private message to all Clients
+	 */
         private synchronized void broadcastOnlyOne(String message, ChatMessage cm) {
                 
                 // add HH:mm:ss and \n to the message
 		String time = sdf.format(new Date());
 		String messageLf = time + " " + message + "\n";
-		// display message on console and on  GUI
 		System.out.print(messageLf);
-		ServerJFrame.TextArea.append(messageLf);     // append in the room window
+		serverGUI.serverTextArea.append(messageLf);     
 
 		// we loop in reverse order in case we would have to remove a Client
 		// because it has disconnected
