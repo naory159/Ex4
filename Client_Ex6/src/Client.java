@@ -2,6 +2,8 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Client {
 
@@ -106,6 +108,43 @@ public class Client {
 		catch(Exception e) {} 
 
 	}
+        
+        public void checkMessage(ChatMessage cm) {
+            if (cm.getType() == ChatMessage.ESTABLISHCONNECTION) {
+                Thread t = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            byte[] aByte = new byte[1];
+                            int bytesRead;
+                            
+                            int port = Integer.parseInt(cm.getMessage());
+                            
+                            Socket clientSocket = new Socket(socket.getInetAddress(), port);
+                            
+                            BufferedInputStream in = new BufferedInputStream(clientSocket.getInputStream());
+                            String filename = clientGUI.fileNameToSend.getText();
+                            File f = new File(filename);
+                            FileOutputStream f1 = new FileOutputStream(f);
+                            BufferedOutputStream bos = new BufferedOutputStream(f1);
+
+                            while(in.read(aByte)!=-1){
+                                f1.write(aByte);
+                            }
+                            f1.close();
+                            clientSocket.close();
+                            
+                        } catch (IOException ex) {
+                            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                    }
+                });
+                
+                t.start();
+            }
+        }
 	
 	class ListenFromServer extends Thread {
             
@@ -113,8 +152,20 @@ public class Client {
 			
                         while(true) {
 				try {
-					String msg = (String) sInput.readObject();
-					clientGUI.BigTextArea.append(msg);
+                                    Object fromServer = sInput.readObject();
+                                    
+                                    if (fromServer instanceof String) {
+                                        clientGUI.BigTextArea.append((String)fromServer);
+                                        
+                                        // GUI changes
+                                        if (((String)fromServer).contains("press procced to Continue"))
+                                            clientGUI.ProceedButton.setEnabled(true);
+                                        else if (((String)fromServer).contains("Server: you downloaded 100% out of file"))
+                                            clientGUI.getFileButton.setEnabled(true);
+                                    } else if (fromServer instanceof ChatMessage) {
+                                        ChatMessage cm = (ChatMessage)fromServer;
+                                        checkMessage(cm);
+                                    }
 				}
 				catch(IOException e) {
 					display("Server has close the connection: " + e);

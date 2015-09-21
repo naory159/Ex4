@@ -2,6 +2,8 @@ import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Server extends Thread {
 	// a unique ID for each connection
@@ -14,6 +16,10 @@ public class Server extends Thread {
 	private int port;
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
+        
+        ServerSocket newServerSocketForSend = null;
+        
+        public boolean [] serverPortList = {true, false, false, false, false, false, false, false, false, false};
 
 	/*
 	 *  server constructor that receive the port to listen to for connection as parameter
@@ -35,7 +41,7 @@ public class Server extends Thread {
 		{
 			// the socket used by the server
 			ServerSocket serverSocket = new ServerSocket(port);
-
+                        
 			// infinite loop to wait for connections
 			while(keepGoing) 
 			{
@@ -46,7 +52,7 @@ public class Server extends Thread {
 				// if I was asked to stop
 				if(!keepGoing) break;
 				ClientThread t = new ClientThread(socket);  // make a thread of it
-				al.add(t);									// save it in the ArrayList
+				al.add(t);                                  // save it in the ArrayList
 				t.start();
 			}
 			// I was asked to stop
@@ -116,19 +122,28 @@ public class Server extends Thread {
                 
                 // add HH:mm:ss and \n to the message
 		String time = sdf.format(new Date());
-		String messageLf = time + " " + message + "\n";
+		String messageLf = time + " " + message + "\r\n";
 		System.out.print(messageLf);
-		serverGUI.serverTextArea.append(messageLf);     
-
+		serverGUI.serverTextArea.append(messageLf);
+                
 		// we loop in reverse order in case we would have to remove a Client
 		// because it has disconnected
 		for(int i = al.size(); --i >= 0;) {
 			ClientThread ct = al.get(i);
 			// try to write to the Client if it fails remove it from the list
-			if(cm.getTO().equalsIgnoreCase(ct.username) && !ct.writeMsg(messageLf)) {
+                        if (cm.getType() == ChatMessage.ESTABLISHCONNECTION) {
+                            if(cm.getTO().equalsIgnoreCase(ct.username) && !ct.writeMsg(cm)) {
 				al.remove(i);
 				display("Disconnected Client " + ct.username + " removed from list.");
-			}
+                                break;
+                            }
+                        } else {
+                            if(cm.getTO().equalsIgnoreCase(ct.username) && !ct.writeMsg(message)) {
+				al.remove(i);
+				display("Disconnected Client " + ct.username + " removed from list.");
+                                break;
+                            }
+                        }
 		}
 	}
 
@@ -182,6 +197,19 @@ public class Server extends Thread {
 		Socket socket;
 		ObjectInputStream sInput;
 		ObjectOutputStream sOutput;
+                
+                // the socket where to send file
+		Socket sendSocket;
+		ObjectInputStream sendSocketInput;
+		ObjectOutputStream sendSocketOutput;
+                
+                // the socket where to send file
+		Socket sendMessageSocket;
+		ObjectInputStream endMessageSocketInput;
+		ObjectOutputStream endMessageSocketOutput;
+                
+                Thread sendThread = null;
+                
 		// my unique id (easier for deconnection)
 		int id;
 		// the Username of the Client
@@ -258,6 +286,12 @@ public class Server extends Thread {
                                 case ChatMessage.TO:
                                     broadcastOnlyOne(username + ": " + message, cm);
                                     break;
+                                case ChatMessage.SENDFILE:
+                                    sendFile(username + ": " + message, cm);
+                                    break;
+                                case ChatMessage.PROCEED:
+                                    proceedSendFile();
+                                    break;
                                 }
                                 
 			}
@@ -266,7 +300,89 @@ public class Server extends Thread {
 			remove(id);
 			close();
 		}
+                
+                private void proceedSendFile() {
+                    synchronized(sendThread){
+                        display("pushed proceed !");
+                        sendThread.notify();
+                    }
+                }
+                
+                private void sendFile(String message, ChatMessage cm) {
+                    sendThread = new Thread(new Runnable() {
 
+                        @Override
+                        public void run() {
+                            File f = new File(cm.getFileName());
+                            long sizeOfFile = f.length();
+                            FileInputStream fileInput = null;
+                            try {
+                                fileInput = new FileInputStream(f);
+                                BufferedInputStream bufferInput = new BufferedInputStream(fileInput);
+                                int i = findPortEmpty(serverPortList);
+                                int newPort = 55000 + i;
+                                
+                                serverPortList[i] = true;
+                                
+                                newServerSocketForSend = null;
+                                newServerSocketForSend = new ServerSocket(newPort);
+                                
+                                Socket sendSocket = new Socket();
+                                
+                                ChatMessage cmConnectToSendFile = new ChatMessage(ChatMessage.ESTABLISHCONNECTION, newPort + "", cm.getTO(), f.toString());
+                                broadcastOnlyOne(username + ": " + message, cmConnectToSendFile);
+                                
+                                sendSocket = newServerSocketForSend.accept();
+                                
+                                BufferedOutputStream bufferedOutput = new BufferedOutputStream(sendSocket.getOutputStream());
+                                int count;
+                                int countTotal=0;
+                                byte by[] = new byte[1];
+                                while((count = bufferInput.read(by)) > 0){
+                                    countTotal++;
+                                    bufferedOutput.write(by);
+                                    if(countTotal == sizeOfFile/2) {
+                                        broadcastOnlyOne("Server: the 50% sent with the last bit: "+ Character.toString((char) by[0]) + " press procced to Continue" + "\n", cm);
+                                        synchronized(sendThread) {
+                                            sendThread.wait();
+                                        }
+                                    }
+                                }
+                                broadcastOnlyOne("Server: you downloaded 100% out of file" + "\n", cm);
+                                broadcastOnlyOne("Server: " + cm.getTO() + " " + sendSocket.getInetAddress() + " " + sendSocket.getLocalPort() + " is now disconnected the FTP connection!" + "\n", cm);
+                                bufferedOutput.close();
+                                sendSocket.close();
+                                newServerSocketForSend.close();
+                                bufferInput.close();
+
+                                serverPortList[i] = false;
+                                
+                            } catch (FileNotFoundException ex) {
+                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (IOException ex) {
+                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    });
+                    
+                    sendThread.start();
+                }
+                
+                /*
+                Find empty port to send file
+                */
+                public int findPortEmpty (boolean[] booleanArray) {
+                    int ans = -1;
+                    for (int i = 0 ; i < booleanArray.length ; i++) {
+                        if (booleanArray[i]==false) {
+                            return i;
+                        }
+                    }
+                    return ans;
+                }
+                
 		// try to close everything
 		private void close() {
 			// try to close the connection
@@ -296,6 +412,31 @@ public class Server extends Thread {
 			// write the message to the stream
 			try {
 				sOutput.writeObject(msg);
+			}
+			// if an error occurs, do not abort just inform the user
+			catch(IOException e) {
+				display("Error sending message to " + username);
+				display(e.toString());
+			}
+			return true;
+		}
+                
+                /*
+		 * Write a String to the Client output stream
+		 */
+		private boolean writeMsg(ChatMessage cm) {
+			// if Client is still connected send the message to it
+			if(!socket.isConnected()) {
+				close();
+				return false;
+			}
+			// write the message to the stream
+			try {
+                                boolean sendChatMessage = cm.getType() == ChatMessage.ESTABLISHCONNECTION;
+                                if (sendChatMessage)
+                                    sOutput.writeObject(cm);
+                                else
+                                    sOutput.writeObject(cm.getMessage());
 			}
 			// if an error occurs, do not abort just inform the user
 			catch(IOException e) {

@@ -7,10 +7,11 @@ import java.io.*;
 public class ChatMessage implements Serializable {
 
 	
-	static final int WHOISIN = 0, MESSAGE = 1, LOGOUT = 2, TO = 3;
+	static final int WHOISIN = 0, MESSAGE = 1, LOGOUT = 2, TO = 3, SENDFILE = 4, ESTABLISHCONNECTION = 5, PROCEED = 6;
 	private int type;
 	private String message;
         private String to;
+        private String fileName;
 	
 	ChatMessage(int type, String message) {
 		this.type = type;
@@ -23,7 +24,13 @@ public class ChatMessage implements Serializable {
                 this.to = to;
 	}
 
-	
+	ChatMessage(int type, String message, String to, String fileName) {
+		this.type = type;
+		this.message = message;
+                this.to = to;
+                this.fileName = fileName;
+	}
+        
 	int getType() {
 		return type;
 	}
@@ -35,5 +42,8 @@ public class ChatMessage implements Serializable {
             return to;
         }
         
+        String getFileName() {
+            return fileName;
+        }
 }
 

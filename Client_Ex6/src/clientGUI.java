@@ -1,3 +1,6 @@
+
+import java.io.IOException;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -23,7 +26,7 @@ public class clientGUI extends javax.swing.JFrame {
     public clientGUI() {
         initComponents();
         // default values
-	portNumber = 45000;
+	portNumber = 55000;
 	serverAddress = "localhost";
 	userName = "Anonymous";
         client = null;
@@ -52,6 +55,10 @@ public class clientGUI extends javax.swing.JFrame {
         BigTextArea = new javax.swing.JTextArea();
         toLabel = new javax.swing.JLabel();
         toField = new javax.swing.JTextField();
+        getFileButton = new javax.swing.JButton();
+        fileNameToSend = new javax.swing.JTextField();
+        fileNamejLabel = new javax.swing.JLabel();
+        ProceedButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -97,6 +104,30 @@ public class clientGUI extends javax.swing.JFrame {
 
         toLabel.setText("  to:  ");
 
+        getFileButton.setText("Send file");
+        getFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getFileButtonActionPerformed(evt);
+            }
+        });
+
+        fileNameToSend.setText("test.txt");
+        fileNameToSend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileNameToSendActionPerformed(evt);
+            }
+        });
+
+        fileNamejLabel.setText("Tape the name of the file you want to download:");
+
+        ProceedButton.setText("Proceed");
+        ProceedButton.setEnabled(false);
+        ProceedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ProceedButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -105,14 +136,6 @@ public class clientGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(sendMessageField)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(toLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(toField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sendMessageButt))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(connButt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -127,7 +150,25 @@ public class clientGUI extends javax.swing.JFrame {
                         .addComponent(showOnlineButt)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(clearButt)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(fileNamejLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(fileNameToSend, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(getFileButton))
+                            .addComponent(sendMessageField))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(toLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(toField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sendMessageButt))
+                            .addComponent(ProceedButton))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -150,7 +191,13 @@ public class clientGUI extends javax.swing.JFrame {
                     .addComponent(sendMessageButt)
                     .addComponent(toLabel)
                     .addComponent(toField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fileNameToSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(getFileButton)
+                    .addComponent(fileNamejLabel)
+                    .addComponent(ProceedButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -216,6 +263,29 @@ public class clientGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_sendMessageButtActionPerformed
 
+    private void getFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getFileButtonActionPerformed
+        if (isConnect) {
+            if (fileNameToSend.getText().equals("")) {
+                BigTextArea.append("\nFile name is empty!\n");
+                return;
+            }
+            client.sendMessage(new ChatMessage(ChatMessage.SENDFILE, "I want to download the file: " + fileNameToSend.getText(), this.userName, fileNameToSend.getText()));
+            getFileButton.setEnabled(false);
+        }
+        else {
+            BigTextArea.append("\nyou are not connect\n");
+        }
+    }//GEN-LAST:event_getFileButtonActionPerformed
+
+    private void ProceedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ProceedButtonActionPerformed
+        client.sendMessage(new ChatMessage(ChatMessage.PROCEED, ""));
+        ProceedButton.setEnabled(false);
+    }//GEN-LAST:event_ProceedButtonActionPerformed
+
+    private void fileNameToSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileNameToSendActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fileNameToSendActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -254,10 +324,14 @@ public class clientGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JTextArea BigTextArea;
+    public static javax.swing.JButton ProceedButton;
     private javax.swing.JLabel adderssLabel;
     private javax.swing.JTextField addressField;
     private javax.swing.JButton clearButt;
     private javax.swing.JButton connButt;
+    public static javax.swing.JTextField fileNameToSend;
+    private javax.swing.JLabel fileNamejLabel;
+    public static javax.swing.JButton getFileButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JButton sendMessageButt;

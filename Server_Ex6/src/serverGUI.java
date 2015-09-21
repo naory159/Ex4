@@ -18,7 +18,7 @@ public class serverGUI extends javax.swing.JFrame {
      */
     public serverGUI() {
         initComponents();
-        this.port = 45000;
+        this.port = 55000;
         isConnect = false;
     }
 
