@@ -160,7 +160,9 @@ public class Client {
                                         // GUI changes
                                         if (((String)fromServer).contains("press procced to Continue"))
                                             clientGUI.ProceedButton.setEnabled(true);
-                                        else if (((String)fromServer).contains("Server: you downloaded 100% out of file"))
+                                        else if (  ((String)fromServer).contains("Server: you downloaded 100% out of file")
+                                                || ((String)fromServer).contains("Too many FTP connections")
+                                                || ((String)fromServer).contains("ERROR"))
                                             clientGUI.getFileButton.setEnabled(true);
                                     } else if (fromServer instanceof ChatMessage) {
                                         ChatMessage cm = (ChatMessage)fromServer;

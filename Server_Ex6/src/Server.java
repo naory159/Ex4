@@ -17,6 +17,8 @@ public class Server extends Thread {
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
         
+        private int ftpConnections;
+        
         ServerSocket newServerSocketForSend = null;
         
         public boolean [] serverPortList = {true, false, false, false, false, false, false, false, false, false};
@@ -32,6 +34,8 @@ public class Server extends Thread {
 		sdf = new SimpleDateFormat("HH:mm:ss");
 		// ArrayList for the Client list
 		al = new ArrayList<ClientThread>();
+                
+                this.ftpConnections = 0;
 	}
 
 	public void run() {
@@ -47,7 +51,7 @@ public class Server extends Thread {
 			{
 				// format message saying we are waiting
 				display("Server waiting for Clients on port " + port + ".");
-
+                                
 				Socket socket = serverSocket.accept();  // accept connection
 				// if I was asked to stop
 				if(!keepGoing) break;
@@ -313,6 +317,14 @@ public class Server extends Thread {
 
                         @Override
                         public void run() {
+                            ftpConnections++;
+                            
+                            if (ftpConnections > 2) { 
+                                ftpConnections--;
+                                writeMsg(new ChatMessage(ChatMessage.MESSAGE, "Too many FTP connections! try again later" + "\n", username));
+                                return;
+                            }
+                            
                             File f = new File(cm.getFileName());
                             long sizeOfFile = f.length();
                             FileInputStream fileInput = null;
@@ -354,15 +366,23 @@ public class Server extends Thread {
                                 sendSocket.close();
                                 newServerSocketForSend.close();
                                 bufferInput.close();
-
+                                
+                                ftpConnections--;
+                                
                                 serverPortList[i] = false;
                                 
                             } catch (FileNotFoundException ex) {
                                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                writeMsg(new ChatMessage(ChatMessage.MESSAGE, "לשרת אין אפשרות לאתר את הקובץ המבוקERROR: ש!" + "\n", username));
+                                ftpConnections--;
                             } catch (IOException ex) {
                                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                writeMsg(new ChatMessage(ChatMessage.MESSAGE, "ERROR" + "\n", username));
+                                ftpConnections--;
                             } catch (InterruptedException ex) {
                                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                writeMsg(new ChatMessage(ChatMessage.MESSAGE, "ERROR" + "\n", username));
+                                ftpConnections--;
                             }
                         }
                     });
